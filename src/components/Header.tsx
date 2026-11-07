@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
-import { NAV } from "@/lib/site";
+import { NAV, SITE } from "@/lib/site";
 
 export function Header() {
   const pathname = usePathname();
@@ -50,10 +50,10 @@ export function Header() {
       </a>
 
       <header className="gsh-navbar">
-        <Link className="gsh-brand" href="/" aria-label="Galaxy Setup Pro home">
+        <Link className="gsh-brand" href="/" aria-label={`${SITE.name} home`}>
           <Logo />
           <span className="gsh-brand-text">
-            GalaxySetup<b>Pro</b>
+            Poke <b>Studio</b>
           </span>
         </Link>
 
