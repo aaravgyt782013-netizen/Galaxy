@@ -45,8 +45,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   heroSubtitle:
     "Your creative hub for Minecraft plugins, server setups, maps, models, panels, web code, scripts and configurations. Explore free and premium resources.",
   discord: "https://discord.gg/p2YqHYHDXU",
-  accent: "#7c3aed",
-  accentHi: "#a78bfa",
+  accent: "#e63946",
+  accentHi: "#ff6975",
 };
 
 /** The published content file that ships with the build. */
