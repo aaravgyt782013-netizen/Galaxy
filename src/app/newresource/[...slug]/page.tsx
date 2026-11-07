@@ -40,7 +40,6 @@ export default async function ResourcePage({
   const content = await getContentOrPublished();
   const resource = getResource(slug.join("/"), content);
   if (!resource) notFound();
-  if (slug.some((part) => /\\.html$/i.test(part))) permanentRedirect(resourceHref(resource.slug));
 
   const article = getArticle(resource.key, resource.title, resource.category);
   const related = relatedResources(resource, 3, content);
