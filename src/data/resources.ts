@@ -449,9 +449,21 @@ export function resourcesByCategory(category: Category, content?: ContentFile): 
   return (content ? applyContent(content) : RESOURCES).filter((r) => r.category === category);
 }
 
+/** Strip legacy file extensions from public resource paths. Stored catalogue slugs remain unchanged for compatibility. */
+export function cleanResourceSlug(slug: string): string {
+  return slug.replace(/^\\/+/, "").replace(/\\.html$/i, "");
+}
+
+/** Canonical public URL for a resource. */
+export function resourceHref(slug: string): string {
+  return `/resource/${cleanResourceSlug(slug)}`;
+}
+
 export function getResource(slug: string, content?: ContentFile): Resource | undefined {
-  const normalized = slug.replace(/^\/+/, "");
-  return (content ? applyContent(content) : RESOURCES).find((r) => r.slug === normalized || r.key === normalized);
+  const normalized = cleanResourceSlug(slug);
+  return (content ? applyContent(content) : RESOURCES).find(
+    (r) => cleanResourceSlug(r.slug) === normalized || r.key === normalized,
+  );
 }
 
 export function relatedResources(resource: Resource, limit = 3, content?: ContentFile): Resource[] {
