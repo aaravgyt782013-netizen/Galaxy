@@ -3,6 +3,8 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ScrollTop } from "@/components/ScrollTop";
+import { PreviewTheme } from "@/components/PreviewTheme";
+import { PUBLISHED } from "@/lib/content";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://galaxy-setup-pro.vercel.app"),
@@ -30,8 +32,15 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const accentStyle = {
+    "--accent": PUBLISHED.settings.accent,
+    "--accent-hi": PUBLISHED.settings.accentHi,
+    "--cube-l": PUBLISHED.settings.accent,
+    "--cube-t": PUBLISHED.settings.accentHi,
+  } as React.CSSProperties;
+
   return (
-    <html lang="en">
+    <html lang="en" style={accentStyle}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -52,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </div>
         <ScrollTop />
+        <PreviewTheme />
       </body>
     </html>
   );

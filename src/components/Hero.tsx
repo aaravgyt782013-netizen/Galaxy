@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CATEGORIES, TOTAL_RESOURCES } from "@/data/resources";
 import { SITE } from "@/lib/site";
+import { PUBLISHED } from "@/lib/content";
 import { Logo } from "./Logo";
 
 export function Hero() {
@@ -8,23 +9,20 @@ export function Hero() {
     <section className="gsh-hero" aria-labelledby="hero-title">
       <div className="gsh-hero-inner">
         <div>
-          <span className="gsh-tag">Free downloads</span>
+          <span className="gsh-tag">{PUBLISHED.settings.heroTag}</span>
           <h1 id="hero-title">
-            Build your server.
+            {PUBLISHED.settings.heroTitle}
             <br />
-            <span>Pay nothing.</span>
+            <span>{PUBLISHED.settings.heroTitleAccent}</span>
           </h1>
-          <p>
-            Plugins, ready-made setups, maps, models and configs for your Minecraft
-            server. New resources are added regularly.
-          </p>
+          <p>{PUBLISHED.settings.heroSubtitle}</p>
           <div className="gsh-hero-btns">
             <Link className="gsh-btn" href="/category/plugin">
               Browse plugins
             </Link>
             <a
               className="gsh-btn ghost"
-              href={SITE.discord}
+              href={PUBLISHED.settings.discord || SITE.discord}
               target="_blank"
               rel="noopener noreferrer nofollow"
             >

@@ -2,6 +2,7 @@
 // Slugs mirror the public resource URLs of the original site.
 
 import { RAW_SLUGS } from "./rawSlugs";
+import { PUBLISHED, type ContentFile } from "@/lib/content";
 
 // Publication dates captured from the live blog for the newest drops.
 const KNOWN_DATES: Record<string, string> = {
@@ -280,6 +281,8 @@ export type Resource = {
   date: string;          // YYYY-MM-DD
   month: string;         // YYYY-MM
   labels: string[];
+  summary?: string;      // overrides the generated card excerpt
+  isCustom?: boolean;    // added through the admin panel
 };
 
 function titleCase(input: string): string {
@@ -378,7 +381,7 @@ function dateFor(year: string, month: string): string {
 
 const seen = new Set<string>();
 
-export const RESOURCES: Resource[] = rawSlugs
+const BASE_RESOURCES: Resource[] = rawSlugs
   .filter((slug) => {
     if (seen.has(slug)) return false;
     seen.add(slug);
@@ -400,6 +403,45 @@ export const RESOURCES: Resource[] = rawSlugs
     };
   })
   .sort((a, b) => (a.slug < b.slug ? 1 : -1));
+
+function withContent(content: ContentFile): Resource[] {
+  const hidden = new Set(content.hidden);
+  const patched = BASE_RESOURCES.filter((r) => !hidden.has(r.slug)).map((r) => {
+    const patch = content.patches[r.slug];
+    if (!patch) return r;
+    return {
+      ...r,
+      title: patch.title ?? r.title,
+      category: patch.category ?? r.category,
+      labels: patch.labels?.length ? patch.labels : r.labels,
+      url: patch.url ?? r.url,
+      date: patch.date ?? r.date,
+    };
+  });
+
+  const custom: Resource[] = content.custom.map((item) => ({
+    slug: item.slug,
+    key: item.slug.replace(/^.*\//, "").replace(/\.html$/, ""),
+    url: item.url,
+    title: item.title,
+    category: item.category,
+    date: item.date,
+    month: item.date.slice(0, 7),
+    labels: item.labels.length ? item.labels : [item.category],
+    summary: item.summary,
+    isCustom: true,
+  }));
+
+  return [...custom, ...patched].sort((a, b) => (a.date === b.date ? (a.slug < b.slug ? 1 : -1) : a.date < b.date ? 1 : -1));
+}
+
+/** Resolve the catalogue against a content file (published build or admin draft). */
+export function applyContent(content: ContentFile = PUBLISHED): Resource[] {
+  return withContent(content);
+}
+
+/** Catalogue as shipped in this build. */
+export const RESOURCES: Resource[] = withContent(PUBLISHED);
 
 export const TOTAL_RESOURCES = RESOURCES.length;
 
@@ -430,6 +472,7 @@ const KIND_BY_CATEGORY: Record<Category, string> = {
 
 /** Short excerpt used on feed cards. */
 export function snippetFor(resource: Resource): string {
+  if (resource.summary) return resource.summary;
   const kind = KIND_BY_CATEGORY[resource.category];
   const highlight = resource.labels.find(
     (l) => l !== kind && l !== "free download" && l !== resource.category,
