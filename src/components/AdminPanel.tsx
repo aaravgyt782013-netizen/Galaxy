@@ -473,99 +473,40 @@ export function AdminPanel() {
       ) : null}
 
       {tab === "settings" ? (
-        <div className="admin-form">
-          <h2 className="admin-h2">Homepage &amp; theme</h2>
-
-          <label className="admin-field">
-            <span>Hero badge</span>
-            <input
-              className="admin-input"
-              value={content.settings.heroTag}
-              onChange={(e) =>
-                setContent({ ...content, settings: { ...content.settings, heroTag: e.target.value } })
-              }
-            />
-          </label>
-
-          <label className="admin-field">
-            <span>Hero headline</span>
-            <input
-              className="admin-input"
-              value={content.settings.heroTitle}
-              onChange={(e) =>
-                setContent({ ...content, settings: { ...content.settings, heroTitle: e.target.value } })
-              }
-            />
-          </label>
-
-          <label className="admin-field">
-            <span>Hero headline (accent line)</span>
-            <input
-              className="admin-input"
-              value={content.settings.heroTitleAccent}
-              onChange={(e) =>
-                setContent({ ...content, settings: { ...content.settings, heroTitleAccent: e.target.value } })
-              }
-            />
-          </label>
-
-          <label className="admin-field">
-            <span>Hero subtitle</span>
-            <textarea
-              className="admin-input admin-textarea"
-              value={content.settings.heroSubtitle}
-              onChange={(e) =>
-                setContent({ ...content, settings: { ...content.settings, heroSubtitle: e.target.value } })
-              }
-            />
-          </label>
-
-          <label className="admin-field">
-            <span>Discord invite</span>
-            <input
-              className="admin-input"
-              value={content.settings.discord}
-              onChange={(e) =>
-                setContent({ ...content, settings: { ...content.settings, discord: e.target.value } })
-              }
-            />
-          </label>
-
-          <div className="admin-row">
-            <label className="admin-field">
-              <span>Accent colour</span>
-              <input
-                className="admin-input admin-color"
-                type="color"
-                value={content.settings.accent}
-                onChange={(e) =>
-                  setContent({ ...content, settings: { ...content.settings, accent: e.target.value } })
-                }
-              />
-            </label>
-            <label className="admin-field">
-              <span>Accent highlight</span>
-              <input
-                className="admin-input admin-color"
-                type="color"
-                value={content.settings.accentHi}
-                onChange={(e) =>
-                  setContent({ ...content, settings: { ...content.settings, accentHi: e.target.value } })
-                }
-              />
-            </label>
-          </div>
-
-          <button
-            type="button"
-            className="gsh-filter"
-            onClick={() => setContent({ ...content, settings: DEFAULT_SETTINGS })}
-          >
-            Reset settings
-          </button>
+        <div className="admin-settings-workspace">
+          <section className="admin-form">
+            <div className="admin-section-heading"><div><span className="admin-eyebrow">SITE IDENTITY</span><h2 className="admin-h2">Homepage content</h2></div><p className="admin-muted">Update the words visitors see across the homepage.</p></div>
+            <label className="admin-field"><span>Hero badge</span><input className="admin-input" value={content.settings.heroTag} onChange={(e) => setContent({ ...content, settings: { ...content.settings, heroTag: e.target.value } })} /></label>
+            <label className="admin-field"><span>Hero headline</span><input className="admin-input" value={content.settings.heroTitle} onChange={(e) => setContent({ ...content, settings: { ...content.settings, heroTitle: e.target.value } })} /></label>
+            <label className="admin-field"><span>Hero headline accent</span><input className="admin-input" value={content.settings.heroTitleAccent} onChange={(e) => setContent({ ...content, settings: { ...content.settings, heroTitleAccent: e.target.value } })} /></label>
+            <label className="admin-field"><span>Hero subtitle</span><textarea className="admin-input admin-textarea" value={content.settings.heroSubtitle} onChange={(e) => setContent({ ...content, settings: { ...content.settings, heroSubtitle: e.target.value } })} /></label>
+            <label className="admin-field"><span>Discord invite</span><input className="admin-input" value={content.settings.discord} onChange={(e) => setContent({ ...content, settings: { ...content.settings, discord: e.target.value } })} /></label>
+          </section>
+          <section className="admin-form admin-theme-editor">
+            <div className="admin-section-heading"><div><span className="admin-eyebrow">DESIGN SYSTEM</span><h2 className="admin-h2">Live theme studio</h2></div><p className="admin-muted">Choose a colour or enter its exact HEX value. Changes sync to the shared site settings.</p></div>
+            <div className="admin-theme-preview" style={{ background: content.settings.background, color: content.settings.text, borderColor: content.settings.border }}>
+              <div className="admin-preview-top"><span className="admin-preview-dot" style={{background:content.settings.accent}}/><strong>Poke Studio</strong><span className="admin-preview-label">LIVE PALETTE</span></div>
+              <div className="admin-preview-content" style={{background:content.settings.surface,borderColor:content.settings.border}}><span style={{color:content.settings.accentHi}}>CREATOR RESOURCE HUB</span><h3>Build something <b style={{color:content.settings.accent}}>great.</b></h3><p style={{color:content.settings.muted}}>Preview your surface, typography and primary action colours.</p><button type="button" style={{background:content.settings.accent,color:"#ffffff"}}>Primary button</button></div>
+              <div className="admin-preview-swatches">{[["Primary",content.settings.accent],["Highlight",content.settings.accentHi],["Background",content.settings.background],["Surface",content.settings.surface],["Text",content.settings.text]].map(([label,color])=><span key={label}><i style={{background:color}}/>{label}</span>)}</div>
+            </div>
+            <div className="admin-color-grid">
+              {([
+                ["Primary / brand", "accent", "Buttons, links and brand elements"],
+                ["Accent highlight", "accentHi", "Highlights, badges and hover states"],
+                ["Page background", "background", "Main website canvas"],
+                ["Card / panel", "surface", "Cards, navbar and panels"],
+                ["Raised surface", "surfaceAlt", "Secondary cards, tabs and inputs"],
+                ["Main text", "text", "Headings and readable content"],
+                ["Muted text", "muted", "Descriptions and supporting labels"],
+                ["Borders", "border", "Dividers, outlines and card edges"],
+              ] as const).map(([label,key,hint]) => (
+                <label className="admin-color-field" key={key}><span className="admin-color-heading">{label}</span><span className="admin-color-hint">{hint}</span><span className="admin-color-control"><input aria-label={label+" picker"} type="color" value={content.settings[key]} onChange={(e)=>setContent({...content,settings:{...content.settings,[key]:e.target.value}})} /><input aria-label={label+" HEX value"} className="admin-input admin-hex-input" value={content.settings[key]} maxLength={7} spellCheck={false} onChange={(e)=>{const value=e.target.value;if(/^#[0-9a-fA-F]{6}$/.test(value))setContent({...content,settings:{...content.settings,[key]:value}});}} /></span></label>
+              ))}
+            </div>
+            <div className="admin-theme-actions"><button type="button" className="gsh-filter" onClick={()=>setContent({...content,settings:{...content.settings,...DEFAULT_SETTINGS}})}>Reset palette</button><span className="admin-muted">Enter a valid 6-digit HEX code, such as #E63946.</span></div>
+          </section>
         </div>
       ) : null}
-
       {tab === "publish" ? (
         <div className="admin-form">
           <h2 className="admin-h2">Publish</h2>
