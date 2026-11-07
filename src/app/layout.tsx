@@ -9,27 +9,36 @@ import { getContentOrPublished } from "@/lib/contentStore";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://galaxy-setup-pro.vercel.app"),
+  metadataBase: new URL("https://poke-studio.vercel.app"),
   title: {
-    default: "Galaxy Setup Pro",
-    template: "%s | Galaxy Setup Pro",
+    default: "Poke Studio",
+    template: "%s | Poke Studio",
   },
   description:
-    "Free Minecraft plugins, server setups, maps, models, configs and server forks. Build your server and pay nothing.",
+    "Poke Studio is your creative hub for free and premium Minecraft plugins, server setups, maps, models, panels, web code, scripts and configurations.",
+  applicationName: "Poke Studio",
   keywords: [
+    "Poke Studio",
     "Minecraft plugins",
-    "free minecraft setups",
-    "minecraft maps",
-    "minecraft models",
+    "Minecraft server setups",
+    "Minecraft maps",
+    "Minecraft models",
+    "Minecraft server panels",
+    "Minecraft scripts",
     "server configs",
-    "Paper plugins",
-    "Spigot plugins",
   ],
   openGraph: {
-    title: "Galaxy Setup Pro",
+    title: "Poke Studio",
     description:
-      "Plugins, ready-made setups, maps, models and configs for your Minecraft server.",
+      "Discover Minecraft plugins, server setups, maps, models, panels, scripts and more at Poke Studio.",
+    siteName: "Poke Studio",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Poke Studio",
+    description:
+      "Your creative hub for Minecraft resources, server setups, plugins and more.",
   },
 };
 
