@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ArticleBody } from "@/components/ArticleBody";
 import { SectionHead } from "@/components/SectionHead";
 import { getArticle } from "@/data/articles";
-import { coverStyle, getResource, relatedResources } from "@/data/resources";
+import { coverStyle, getResource, relatedResources, resourceHref } from "@/data/resources";
 import { getContentOrPublished } from "@/lib/contentStore";
 import { SITE } from "@/lib/site";
 
@@ -21,6 +21,7 @@ export async function generateMetadata({
   if (!resource) return { title: "Resource not found" };
   return {
     title: resource.title,
+    alternates: { canonical: resourceHref(resource.slug) },
     description: `Download ${resource.title} — free Minecraft ${resource.category} for Paper, Spigot and Purpur servers.`,
     openGraph: {
       title: resource.title,
@@ -39,6 +40,7 @@ export default async function ResourcePage({
   const content = await getContentOrPublished();
   const resource = getResource(slug.join("/"), content);
   if (!resource) notFound();
+  if (slug.some((part) => /\\.html$/i.test(part))) permanentRedirect(resourceHref(resource.slug));
 
   const article = getArticle(resource.key, resource.title, resource.category);
   const related = relatedResources(resource, 3, content);
@@ -130,20 +132,20 @@ export default async function ResourcePage({
                     <div className="snippet-thumbnail-container">
                       <Link
                         className="snippet-thumbnail"
-                        href={`/resource/${item.slug}`}
+                        href={resourceHref(item.slug)}
                         style={coverStyle(item)}
                         aria-label={item.title}
                       />
                     </div>
                     <div className="post">
                       <h2 className="post-title">
-                        <Link href={`/resource/${item.slug}`}>{item.title}</Link>
+                        <Link href={resourceHref(item.slug)}>{item.title}</Link>
                       </h2>
                     </div>
                   </div>
                   <div className="gsh-card-footer">
                     <span className="gsh-card-meta">{item.category}</span>
-                    <Link className="gsh-get-btn" href={`/resource/${item.slug}`}>
+                    <Link className="gsh-get-btn" href={resourceHref(item.slug)}>
                       GET IT NOW
                     </Link>
                   </div>
