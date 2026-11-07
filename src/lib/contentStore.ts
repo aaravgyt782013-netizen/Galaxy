@@ -28,13 +28,20 @@ async function ensureSchema() {
   await schemaReady;
 }
 
-export async function getStoredContent(): Promise<ContentFile> {
+export async function getStoredContentState(): Promise<{ content: ContentFile; initialized: boolean }> {
   await ensureSchema();
   const sql = database();
   const rows = await sql`SELECT content FROM poke_studio_site_content WHERE id = 1 LIMIT 1`;
-  if (!rows.length) return PUBLISHED;
+  if (!rows.length) return { content: PUBLISHED, initialized: false };
   const stored = rows[0].content;
-  return normaliseContent(typeof stored === "string" ? JSON.parse(stored) : stored);
+  return {
+    content: normaliseContent(typeof stored === "string" ? JSON.parse(stored) : stored),
+    initialized: true,
+  };
+}
+
+export async function getStoredContent(): Promise<ContentFile> {
+  return (await getStoredContentState()).content;
 }
 
 export async function saveStoredContent(raw: unknown): Promise<ContentFile> {
