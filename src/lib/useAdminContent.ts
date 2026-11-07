@@ -32,6 +32,7 @@ export function useAdminContent(): [
   const [loaded, setLoaded] = useState(false);
   const [saveState, setSaveState] = useState<"loading" | "saved" | "saving" | "error">("loading");
   const saveQueue = useRef<Promise<void>>(Promise.resolve());
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -78,26 +79,33 @@ export function useAdminContent(): [
     const normalised = normaliseContent(next);
     setContent(normalised);
     setSaveState("saving");
+    if (saveTimer.current) clearTimeout(saveTimer.current);
 
-    // Serialize writes so quick consecutive edits cannot finish out of order.
-    saveQueue.current = saveQueue.current
-      .catch(() => undefined)
-      .then(async () => {
-        const response = await fetch("/api/content", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify({ content: normalised }),
+    // Debounce typing and serialize writes so rapid edits stay efficient and ordered.
+    saveTimer.current = setTimeout(() => {
+      saveQueue.current = saveQueue.current
+        .catch(() => undefined)
+        .then(async () => {
+          const response = await fetch("/api/content", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify({ content: normalised }),
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data?.error || "Could not save shared content");
+          setSaveState("saved");
+        })
+        .catch((error) => {
+          console.error("[admin] Shared content save failed:", error);
+          setSaveState("error");
         });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data?.error || "Could not save shared content");
-        setSaveState("saved");
-      })
-      .catch((error) => {
-        console.error("[admin] Shared content save failed:", error);
-        setSaveState("error");
-      });
+    }, 450);
   };
+
+  useEffect(() => () => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+  }, []);
 
   return [content, update, loaded, saveState];
 }
