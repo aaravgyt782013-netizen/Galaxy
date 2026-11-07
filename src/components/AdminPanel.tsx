@@ -374,7 +374,7 @@ export function AdminPanel() {
                   title,
                   slug: slugTouched
                     ? d.slug
-                    : `${new Date().getFullYear()}/${String(new Date().getMonth() + 1).padStart(2, "0")}/${slugify(title) || "new-resource"}.html`,
+                    : `${new Date().getFullYear()}/${String(new Date().getMonth() + 1).padStart(2, "0")}/${slugify(title) || "new-resource"}`,
                 }));
               }}
               placeholder="E.g. AntiLag Pro Minecraft Plugin"
