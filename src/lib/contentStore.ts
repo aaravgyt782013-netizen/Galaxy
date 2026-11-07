@@ -1,6 +1,4 @@
-import "server-only";
-
-import { neon } from "@neondatabase/serverless";
+ import { neon } from "@neondatabase/serverless";
 import { PUBLISHED, normaliseContent, type ContentFile } from "@/lib/content";
 
 let schemaReady: Promise<void> | undefined;
