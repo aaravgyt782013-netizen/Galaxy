@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { CATEGORIES, RESOURCES } from "@/data/resources";
+import { CATEGORIES, RESOURCES, resourceHref } from "@/data/resources";
 
 const BASE = "https://galaxy-setup-pro.vercel.app";
 
@@ -20,7 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     })),
     ...RESOURCES.map((r) => ({
-      url: `${BASE}/resource/${r.slug}`,
+      url: `${BASE}${resourceHref(r.slug)}`,
       lastModified: new Date(r.date),
       changeFrequency: "monthly" as const,
       priority: 0.7,
