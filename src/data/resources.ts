@@ -450,7 +450,7 @@ export function resourcesByCategory(category: Category, content?: ContentFile): 
 }
 
 export function getResource(slug: string, content?: ContentFile): Resource | undefined {
-  const normalized = slug.replace(/^\\/+/, "");
+  const normalized = slug.replace(/^\/+/, "");
   return (content ? applyContent(content) : RESOURCES).find((r) => r.slug === normalized || r.key === normalized);
 }
 
