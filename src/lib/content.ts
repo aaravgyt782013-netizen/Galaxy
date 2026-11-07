@@ -39,11 +39,11 @@ export type ContentFile = {
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  heroTag: "Free downloads",
-  heroTitle: "Build your server.",
-  heroTitleAccent: "Pay nothing.",
+  heroTag: "Welcome to Poke Studio",
+  heroTitle: "Minecraft resources.",
+  heroTitleAccent: "Made for creators.",
   heroSubtitle:
-    "Plugins, ready-made setups, maps, models and configs for your Minecraft server. New resources are added regularly.",
+    "Your creative hub for Minecraft plugins, server setups, maps, models, panels, web code, scripts and configurations. Explore free and premium resources.",
   discord: "https://discord.gg/p2YqHYHDXU",
   accent: "#7c3aed",
   accentHi: "#a78bfa",
