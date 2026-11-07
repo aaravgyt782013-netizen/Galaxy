@@ -12,13 +12,13 @@ export function Hero({ content }: { content: ContentFile }) {
     <section className="gsh-hero" aria-labelledby="hero-title">
       <div className="gsh-hero-inner">
         <div>
-          <span className="gsh-tag">Welcome to {SITE.name}</span>
+          <span className="gsh-tag">{settings.heroTag}</span>
           <h1 id="hero-title">
-            Minecraft resources.
+            {settings.heroTitle}
             <br />
-            <span>Made for creators.</span>
+            <span>{settings.heroTitleAccent}</span>
           </h1>
-          <p>{SITE.tagline} Explore our growing collection of free and premium resources.</p>
+          <p>{settings.heroSubtitle}</p>
           <div className="gsh-hero-btns">
             <Link className="gsh-btn" href="/category/plugin">
               Explore resources
