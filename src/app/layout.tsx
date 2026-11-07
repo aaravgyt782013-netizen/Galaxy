@@ -48,6 +48,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     "--accent-hi": content.settings.accentHi,
     "--cube-l": content.settings.accent,
     "--cube-t": content.settings.accentHi,
+    "--bg": content.settings.background,
+    "--surface": content.settings.surface,
+    "--surface2": content.settings.surfaceAlt,
+    "--text": content.settings.text,
+    "--muted": content.settings.muted,
+    "--line": content.settings.border,
   } as React.CSSProperties;
 
   return (
