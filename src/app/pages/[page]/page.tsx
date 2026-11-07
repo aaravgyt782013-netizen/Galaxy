@@ -14,7 +14,7 @@ const PAGES: Record<string, PageContent> = {
     body: [
       {
         type: "p",
-        text: "Galaxy Setup Pro is an independent Minecraft resource showcase. We collect and share free plugins, ready-made server setups, maps, 3D models and configuration packs for server owners who are just getting started.",
+        text: "Poke Studio is an independent Minecraft resource showcase. We collect and share free plugins, ready-made server setups, maps, 3D models and configuration packs for server owners who are just getting started.",
       },
       {
         type: "p",
@@ -53,7 +53,6 @@ const PAGES: Record<string, PageContent> = {
           `Discord: ${SITE.discord}`,
           `YouTube: ${SITE.youtube}`,
           `Instagram: ${SITE.instagram}`,
-          `Email: ${SITE.email}`,
         ],
       },
       {
@@ -67,7 +66,7 @@ const PAGES: Record<string, PageContent> = {
     body: [
       {
         type: "p",
-        text: "Galaxy Setup Pro is a static resource catalogue. We do not require an account to browse or download anything on this site.",
+        text: "Poke Studio is a resource catalogue. We do not require an account to browse or download anything on this site.",
       },
       { type: "h2", text: "What we collect" },
       {
@@ -87,7 +86,7 @@ const PAGES: Record<string, PageContent> = {
       { type: "h2", text: "Contact" },
       {
         type: "p",
-        text: "Questions about this policy can be sent to our Discord server or the contact email listed on the Contact Us page.",
+        text: "Questions about this policy can be sent to our Discord community.",
       },
     ],
   },
@@ -96,7 +95,7 @@ const PAGES: Record<string, PageContent> = {
     body: [
       {
         type: "p",
-        text: "Galaxy Setup Pro is not affiliated with Mojang Studios, Microsoft, PaperMC, SpigotMC or any plugin developer listed on this site.",
+        text: "Poke Studio is not affiliated with Mojang Studios, Microsoft, PaperMC, SpigotMC or any plugin developer listed on this site.",
       },
       {
         type: "p",
@@ -132,7 +131,7 @@ const PAGES: Record<string, PageContent> = {
         items: [
           "Join the Discord and share your server with the community",
           "Subscribe on YouTube and leave a comment on the resource videos",
-          "Credit Galaxy Setup Pro when you use a free setup",
+          "Credit Poke Studio when you use a free setup",
           "Buy premium resources from the original developers",
         ],
       },
