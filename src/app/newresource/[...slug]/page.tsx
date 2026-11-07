@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ArticleBody } from "@/components/ArticleBody";
 import { SectionHead } from "@/components/SectionHead";
 import { getArticle } from "@/data/articles";
@@ -40,6 +40,7 @@ export default async function ResourcePage({
   const content = await getContentOrPublished();
   const resource = getResource(slug.join("/"), content);
   if (!resource) notFound();
+  if (slug.some((part) => part.endsWith(".html"))) permanentRedirect(resourceHref(resource.slug));
 
   const article = getArticle(resource.key, resource.title, resource.category);
   const related = relatedResources(resource, 3, content);
