@@ -73,7 +73,7 @@ export function AdminPanel() {
       patches: { ...content.patches, [slug]: { ...(content.patches[slug] ?? {}), ...patch } },
     };
     setContent(next);
-    flash("Saved globally");
+    flash("Saving globally…");
   };
 
   const resetPatch = (slug: string) => {
