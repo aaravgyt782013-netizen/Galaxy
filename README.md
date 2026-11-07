@@ -94,3 +94,18 @@ This is an independent reimplementation of the site's front end and content mode
 demo purposes. Resource names, builds and trademarks belong to their respective
 owners; Minecraft is a trademark of Mojang Studios. Download buttons link back to the
 original resource pages.
+
+
+## Shared admin content (Neon PostgreSQL)
+
+Admin edits are stored centrally in Neon PostgreSQL and are read by the public website. After the first successful admin save, updates are shared with all visitors without replacing a JSON file or rebuilding the site.
+
+1. Create a Neon PostgreSQL project.
+2. Copy its **pooled** connection string.
+3. In Vercel → Project → Settings → Environment Variables, add `DATABASE_URL` with that connection string for Production and Preview (and Development if needed).
+4. Set strong `ADMIN_USER`, `ADMIN_PASSWORD`, and `ADMIN_SECRET` values in the same environments. Do not commit real secrets.
+5. Redeploy after adding or changing environment variables.
+
+The app creates the `poke_studio_site_content` table automatically on first API access. The first read uses the bundled `src/data/content.json` as the initial default; the first admin save stores the complete content document in Neon.
+
+The public read endpoint is `/api/content`. Writes use `PUT /api/content` and require the existing admin session cookie. If Neon is not configured or unavailable, the public site falls back to bundled content and the admin panel shows a sync error rather than pretending the save succeeded.
