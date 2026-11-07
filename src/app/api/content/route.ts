@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE, verifySession } from "@/lib/adminAuth";
-import { getStoredContent, saveStoredContent } from "@/lib/contentStore";
+import { getStoredContentState, saveStoredContent } from "@/lib/contentStore";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const content = await getStoredContent();
-    return NextResponse.json({ content }, {
+    const state = await getStoredContentState();
+    return NextResponse.json(state, {
       headers: { "Cache-Control": "no-store, max-age=0" },
     });
   } catch (error) {
