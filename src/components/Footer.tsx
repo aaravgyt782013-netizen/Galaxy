@@ -10,7 +10,7 @@ export function Footer() {
           <div className="gsh-footer-brand">
             <Logo className="gsh-footer-logo" />
             <h3>
-              GalaxySetup<b>Pro</b>
+              Poke <b>Studio</b>
             </h3>
             <p>{SITE.tagline}</p>
           </div>
@@ -55,7 +55,7 @@ export function Footer() {
 
         <div className="gsh-footer-bottom">
           <p className="gsh-footer-copy">
-            © {new Date().getFullYear()} <b>GalaxySetupPro</b>. All rights reserved.
+            © {new Date().getFullYear()} <b>Poke Studio</b>. All rights reserved.
           </p>
           <div className="gsh-footer-tags">
             {FOOTER_TAGS.map((tag) => (
