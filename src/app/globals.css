@@ -996,3 +996,97 @@ blockquote{border-left:4px solid var(--accent);border-radius:0 14px 14px 0}
  .admin-color-field{padding:.85rem}
  .admin-theme-preview{border-radius:16px}
 }
+
+
+/* ---------- POKE STUDIO LIGHT THEME ----------
+   Light mode intentionally uses a clean white + blue palette.
+   Dark mode continues to use the complete palette configured in Admin > Site settings.
+*/
+html.light-mode{
+  color-scheme:light;
+  --bg:#f7faff !important;
+  --surface:#ffffff !important;
+  --surface2:#edf4ff !important;
+  --line:#d5e3f7 !important;
+  --text:#101828 !important;
+  --muted:#475569 !important;
+  --accent:#2563eb !important;
+  --accent-hi:#1d4ed8 !important;
+  --accent-ink:#ffffff !important;
+  --cube-t:#60a5fa !important;
+  --cube-l:#2563eb !important;
+  --cube-r:#1e40af !important;
+  --cube-st:#93c5fd !important;
+}
+html.light-mode body{background:var(--bg);color:var(--text)}
+html.light-mode a{color:#1d4ed8}
+html.light-mode .gsh-navbar,
+html.light-mode .gsh-mobile-nav{background:#ffffff;border-color:#d5e3f7}
+html.light-mode .gsh-nav-links a,
+html.light-mode .gsh-mobile-nav a,
+html.light-mode .gsh-brand,
+html.light-mode .gsh-brand-text{color:#101828}
+html.light-mode .gsh-nav-links a:hover,
+html.light-mode .gsh-nav-links a.active,
+html.light-mode .gsh-mobile-nav a:hover{color:#1d4ed8}
+html.light-mode .gsh-mode-btn{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+html.light-mode .gsh-mode-btn:hover{background:#dbeafe;color:#1e40af;border-color:#2563eb}
+html.light-mode .gsh-searchbar-wrap{background:#ffffff;border-color:#d5e3f7}
+html.light-mode .gsh-search-form{background:#f8fbff;border-color:#cbdcf3}
+html.light-mode .gsh-search-form input{color:#101828}
+html.light-mode .gsh-search-form input::placeholder{color:#64748b}
+html.light-mode .gsh-hero,
+html.light-mode .post-wrapper,
+html.light-mode .admin-form,
+html.light-mode .admin-topbar,
+html.light-mode .admin-stats div,
+html.light-mode .admin-table{background:#ffffff;border-color:#d5e3f7}
+html.light-mode .gsh-hero h1,
+html.light-mode .gsh-sechead h2,
+html.light-mode .post-title,
+html.light-mode .post-title a,
+html.light-mode .item-view .post-title,
+html.light-mode .item-view .post-title a,
+html.light-mode .post-body,
+html.light-mode .admin-h2,
+html.light-mode .admin-title,
+html.light-mode .admin-topbar strong{color:#101828 !important}
+html.light-mode .gsh-hero p,
+html.light-mode .post-snippet,
+html.light-mode .byline,
+html.light-mode .admin-muted,
+html.light-mode .admin-mono,
+html.light-mode .admin-field span{color:#475569 !important}
+html.light-mode .gsh-tag,
+html.light-mode .gsh-btn,
+html.light-mode .gsh-get-btn,
+html.light-mode .gsh-search-form button,
+html.light-mode .gsh-filter.active,
+html.light-mode .byline.post-labels a{background:#2563eb;color:#ffffff !important;border-color:#2563eb}
+html.light-mode .gsh-btn.ghost{background:transparent;color:#1d4ed8 !important;border-color:#2563eb}
+html.light-mode .gsh-cats{background:#d5e3f7;border-color:#d5e3f7}
+html.light-mode .gsh-cats a{background:#ffffff;color:#101828}
+html.light-mode .gsh-cats a span,
+html.light-mode .gsh-stats strong,
+html.light-mode .gsh-footer-col h4{color:#1d4ed8}
+html.light-mode .gsh-cats a:hover{background:#2563eb;color:#ffffff}
+html.light-mode .gsh-cats a:hover span{color:#ffffff}
+html.light-mode .gsh-filter{color:#334155;border-color:#cbd5e1}
+html.light-mode .gsh-filter:hover{color:#1d4ed8;border-color:#2563eb}
+html.light-mode .admin-input{background:#ffffff;color:#101828;border-color:#cbd5e1}
+html.light-mode .admin-table th{background:#edf4ff;color:#334155;border-color:#d5e3f7}
+html.light-mode .admin-table td{border-color:#e2e8f0}
+html.light-mode .admin-table tr:hover td{background:#f1f6ff}
+html.light-mode .post-body code{background:#eaf1ff;color:#1d4ed8}
+html.light-mode blockquote,
+html.light-mode .gsh-info,
+html.light-mode .gsh-download-row{background:#edf4ff;color:#334155;border-color:#bfdbfe}
+html.light-mode .gsh-pager a,
+html.light-mode .gsh-pager span{color:#1e293b !important;border-color:#94a3b8}
+html.light-mode .gsh-pager a:hover{background:#2563eb;color:#ffffff !important;border-color:#2563eb}
+html.light-mode #gsh-scroll-top{background:#2563eb}
+html.light-mode #footer{--text:#f1eefb;--muted:#a79fc0;--line:#2b2244;--accent-hi:#93c5fd;background:#070b16;color:#f1eefb}
+html.light-mode #footer .gsh-footer-col h4{color:#93c5fd}
+@media (prefers-color-scheme:light){
+  html:not(.light-mode){color-scheme:dark}
+}
