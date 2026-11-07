@@ -4,7 +4,9 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ScrollTop } from "@/components/ScrollTop";
 import { PreviewTheme } from "@/components/PreviewTheme";
-import { PUBLISHED } from "@/lib/content";
+import { getContentOrPublished } from "@/lib/contentStore";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://galaxy-setup-pro.vercel.app"),
@@ -31,10 +33,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const content = await getContentOrPublished();
   const accentStyle = {
-    "--accent": PUBLISHED.settings.accent,
-    "--accent-hi": PUBLISHED.settings.accentHi,
+    "--accent": content.settings.accent,
+    "--accent-hi": content.settings.accentHi,
     "--cube-l": PUBLISHED.settings.accent,
     "--cube-t": PUBLISHED.settings.accentHi,
   } as React.CSSProperties;
