@@ -41,6 +41,7 @@ export function AdminPanel() {
   const [draft, setDraft] = useState<CustomResource>(emptyDraft);
   const [slugTouched, setSlugTouched] = useState(false);
   const [toast, setToast] = useState("");
+  const [hexDraft, setHexDraft] = useState<Record<string, string>>({});
 
   const resources = useMemo(() => applyContent(content), [content]);
 
@@ -500,7 +501,7 @@ export function AdminPanel() {
                 ["Muted text", "muted", "Descriptions and supporting labels"],
                 ["Borders", "border", "Dividers, outlines and card edges"],
               ] as const).map(([label,key,hint]) => (
-                <label className="admin-color-field" key={key}><span className="admin-color-heading">{label}</span><span className="admin-color-hint">{hint}</span><span className="admin-color-control"><input aria-label={label+" picker"} type="color" value={content.settings[key]} onChange={(e)=>setContent({...content,settings:{...content.settings,[key]:e.target.value}})} /><input aria-label={label+" HEX value"} className="admin-input admin-hex-input" value={content.settings[key]} maxLength={7} spellCheck={false} onChange={(e)=>{const value=e.target.value;if(/^#[0-9a-fA-F]{6}$/.test(value))setContent({...content,settings:{...content.settings,[key]:value}});}} /></span></label>
+                <label className="admin-color-field" key={key}><span className="admin-color-heading">{label}</span><span className="admin-color-hint">{hint}</span><span className="admin-color-control"><input aria-label={label+" picker"} type="color" value={content.settings[key]} onChange={(e)=>{setHexDraft((d)=>({...d,[key]:e.target.value}));setContent({...content,settings:{...content.settings,[key]:e.target.value}});}} /><input aria-label={label+" HEX value"} className="admin-input admin-hex-input" value={hexDraft[key] ?? content.settings[key]} maxLength={7} spellCheck={false} onChange={(e)=>{const value=e.target.value;setHexDraft((d)=>({...d,[key]:value}));if(/^#[0-9a-fA-F]{6}$/.test(value))setContent({...content,settings:{...content.settings,[key]:value}});}} onBlur={()=>{setHexDraft((d)=>({...d,[key]:content.settings[key]}));}} /></span></label>
               ))}
             </div>
             <div className="admin-theme-actions"><button type="button" className="gsh-filter" onClick={()=>setContent({...content,settings:{...content.settings,...DEFAULT_SETTINGS}})}>Reset palette</button><span className="admin-muted">Enter a valid 6-digit HEX code, such as #E63946.</span></div>
