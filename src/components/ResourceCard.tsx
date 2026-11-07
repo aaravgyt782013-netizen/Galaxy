@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { coverStyle, type Resource } from "@/data/resources";
+import { coverStyle, snippetFor, type Resource } from "@/data/resources";
 
 const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -45,10 +45,7 @@ export function ResourceCard({ resource }: { resource: Resource }) {
           <h2 className="post-title">
             <Link href={`/resource/${resource.slug}`}>{resource.title}</Link>
           </h2>
-          <p className="post-snippet">
-            Free {resource.category} download for Minecraft Java Edition servers.
-            Ready to install, documented and safe to test on a staging server.
-          </p>
+          <p className="post-snippet">{snippetFor(resource)}</p>
         </div>
       </div>
 

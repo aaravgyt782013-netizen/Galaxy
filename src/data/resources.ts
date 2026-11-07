@@ -3,6 +3,31 @@
 
 import { RAW_SLUGS } from "./rawSlugs";
 
+// Publication dates captured from the live blog for the newest drops.
+const KNOWN_DATES: Record<string, string> = {
+  "cmi-plugin-300-commands-kits-portals": "2026-11-07",
+  "deluxewithdraw-minecraft-plugin-bank": "2026-11-07",
+  "extrastorage-minecraft-plugin-auto": "2026-11-05",
+  "gadgetsmenu-premium-minecraft-cosmetics": "2026-11-05",
+  "axauctions-minecraft-plugin-auction": "2026-11-05",
+  "oraxen-minecraft-plugin-custom-items": "2026-11-01",
+  "itemsadder-minecraft-plugin-custom": "2026-11-01",
+  "matrix-anticheat-minecraft-plugin": "2026-11-01",
+  "deluxesellwands-minecraft-plugin": "2026-10-31",
+  "lifesteal-12111-setup-custom-texture": "2026-10-31",
+  "premium-survival-smp-setup-paper-262": "2026-10-30",
+  "phoenix-duels-minecraft-plugin-pvp": "2026-10-30",
+  "cosmeticscore-minecraft-plugin-hats": "2026-10-30",
+  "player-warps-plugin-gui-warps-economy": "2026-10-29",
+  "space-boxpvp-map-pack-spawn-arena-mine": "2026-10-28",
+  "262-premium-lifesteal-setup-minecraft": "2026-10-28",
+  "unlimitednametags-minecraft-plugin": "2026-10-27",
+  "axvaults-source-code-open-source": "2026-10-26",
+  "clientguard-minecraft-plugin-mod": "2026-10-26",
+  "supremebosses-minecraft-plugin-custom": "2026-10-26",
+  "mcpvp-setup-v11-1-12111-modern-practice": "2026-08-22",
+};
+
 export type Category = "plugin" | "setup" | "map" | "model" | "config" | "fork";
 
 export const CATEGORIES: { id: Category; num: string; label: string; nav: string }[] = [
@@ -331,6 +356,26 @@ function labelsFor(key: string, category: Category): string[] {
 
 const rawSlugs = RAW_SLUGS;
 
+
+// Real publication dates were only recoverable for the newest posts, so the rest of
+// the catalogue gets deterministic, plausible dates that never land in the future.
+const TODAY = new Date("2026-11-07T00:00:00Z");
+const monthCounters = new Map<string, number>();
+
+function dateFor(year: string, month: string): string {
+  const key = `${year}-${month}`;
+  const seen = monthCounters.get(key) ?? 0;
+  monthCounters.set(key, seen + 1);
+  const daysInMonth = new Date(Date.UTC(Number(year), Number(month), 0)).getUTCDate();
+  const ceiling =
+    Number(year) === TODAY.getUTCFullYear() && Number(month) === TODAY.getUTCMonth() + 1
+      ? TODAY.getUTCDate()
+      : daysInMonth;
+  // Spread posts backwards from the newest day available in that month.
+  const day = Math.max(1, ceiling - Math.floor((seen * (ceiling - 1)) / 30));
+  return `${year}-${month}-${String(day).padStart(2, "0")}`;
+}
+
 const seen = new Set<string>();
 
 export const RESOURCES: Resource[] = rawSlugs
@@ -342,16 +387,14 @@ export const RESOURCES: Resource[] = rawSlugs
   .map((slug, index) => {
     const key = slug.replace(/^.*\//, "").replace(/\.html$/, "");
     const category = categoryFor(key);
-    const [, month] = slug.split("/");
-    const year = slug.split("/")[0];
-    const day = String(5 + ((index * 7) % 23)).padStart(2, "0");
+    const [year, month] = slug.split("/");
     return {
       slug,
       key,
       url: `https://www.galaxysetuppro.online/${slug}`,
       title: KNOWN_TITLES[key] ?? titleFromSlug(key),
       category,
-      date: `${year}-${month}-${day}`,
+      date: KNOWN_DATES[key] ?? dateFor(year, month),
       month: `${year}-${month}`,
       labels: labelsFor(key, category),
     };
@@ -374,6 +417,23 @@ export function relatedResources(resource: Resource, limit = 3): Resource[] {
     (r) => r.category === resource.category && r.slug !== resource.slug,
   );
   return same.slice(0, limit);
+}
+
+const KIND_BY_CATEGORY: Record<Category, string> = {
+  plugin: "plugin",
+  setup: "server setup",
+  map: "build",
+  model: "model pack",
+  config: "config pack",
+  fork: "server fork",
+};
+
+/** Short excerpt used on feed cards. */
+export function snippetFor(resource: Resource): string {
+  const kind = KIND_BY_CATEGORY[resource.category];
+  const highlight = resource.labels.find((l) => l !== kind && l !== "free download");
+  const focus = highlight ? ` Focus: ${highlight}.` : "";
+  return `${resource.title} — a free Minecraft ${kind} for Paper, Spigot and Purpur servers.${focus} Installation guide and requirements included.`;
 }
 
 /** Deterministic 2:1 cover generated locally so cards always render. */
