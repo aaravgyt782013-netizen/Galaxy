@@ -5,10 +5,12 @@ import { ResourceCard } from "@/components/ResourceCard";
 import { SectionHead } from "@/components/SectionHead";
 import {
   CATEGORIES,
-  RESOURCES,
-  resourcesByCategory,
+  applyContent,
   type Category,
 } from "@/data/resources";
+import { getContentOrPublished } from "@/lib/contentStore";
+
+export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 12;
 
@@ -24,7 +26,8 @@ export async function generateMetadata({
   const { category } = await params;
   const meta = CATEGORIES.find((c) => c.id === category);
   if (!meta) return { title: "Category not found" };
-  const count = resourcesByCategory(meta.id).length;
+  const content = await getContentOrPublished();
+  const count = applyContent(content).filter((r) => r.category === meta.id).length;
   return {
     title: `${meta.label} — ${count} free downloads`,
     description: `Download ${count} free Minecraft ${meta.label.toLowerCase()} for Paper, Spigot, Purpur and Folia servers.`,
@@ -43,7 +46,8 @@ export default async function CategoryPage({
   const meta = CATEGORIES.find((c) => c.id === category);
   if (!meta) notFound();
 
-  const all = resourcesByCategory(meta.id as Category);
+  const content = await getContentOrPublished();
+  const all = applyContent(content).filter((r) => r.category === (meta.id as Category));
   const current = Math.max(1, Math.min(Number(page ?? 1) || 1, Math.max(1, Math.ceil(all.length / PAGE_SIZE))));
   const items = all.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
