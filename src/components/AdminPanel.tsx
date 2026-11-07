@@ -33,7 +33,7 @@ function slugify(value: string) {
 }
 
 export function AdminPanel() {
-  const [content, setContent, loaded] = useAdminContent();
+  const [content, setContent, loaded, saveState] = useAdminContent();
   const [tab, setTab] = useState<Tab>("resources");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<"all" | CategoryId | "hidden" | "custom">("all");
@@ -73,7 +73,7 @@ export function AdminPanel() {
       patches: { ...content.patches, [slug]: { ...(content.patches[slug] ?? {}), ...patch } },
     };
     setContent(next);
-    flash("Saved");
+    flash("Saved globally");
   };
 
   const resetPatch = (slug: string) => {
@@ -146,7 +146,7 @@ export function AdminPanel() {
   const copyJson = async () => {
     try {
       await navigator.clipboard.writeText(JSON.stringify(content, null, 2));
-      flash("JSON copied — repo ke src/data/content.json mein paste karein");
+      flash("Content backup copied");
     } catch {
       flash("Copy failed — download button use karein");
     }
@@ -168,6 +168,12 @@ export function AdminPanel() {
   return (
     <div className="admin-body">
       {toast ? <div className="admin-toast">{toast}</div> : null}
+
+      <p className={`admin-muted admin-save-status ${saveState}`} role="status" aria-live="polite">
+        {saveState === "saving" ? "Saving changes to the shared database…" : null}
+        {saveState === "saved" ? "All changes synced globally." : null}
+        {saveState === "error" ? "Shared sync failed. Check DATABASE_URL, Neon access, and your admin session." : null}
+      </p>
 
       <div className="admin-stats">
         <div>
@@ -564,9 +570,9 @@ export function AdminPanel() {
         <div className="admin-form">
           <h2 className="admin-h2">Publish</h2>
           <p className="admin-muted">
-            Ye static site hai, isliye changes browser mein (draft) save hote hain. Neeche se{" "}
-            <code>content.json</code> download karke repo ke <code>src/data/content.json</code> par paste
-            karein — Vercel naya deploy khud bana dega.
+            Admin changes are saved to the shared Neon database and appear on the public website for
+            every visitor automatically. No JSON replacement or redeployment is needed. You can still
+            download or import a JSON backup below.
           </p>
 
           <div className="admin-row">
