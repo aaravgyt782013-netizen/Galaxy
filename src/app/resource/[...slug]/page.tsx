@@ -68,7 +68,7 @@ export default async function ResourcePage({
 
             {article.kicker || article.sub ? (
               <div className="gsh-post-banner" style={{ marginTop: "1rem" }}>
-                {article.kicker ? <h1>{article.kicker}</h1> : null}
+                {article.kicker ? <p className="gsh-post-kicker">{article.kicker}</p> : null}
                 {article.sub ? <p>{article.sub}</p> : null}
               </div>
             ) : null}

@@ -507,3 +507,8 @@ blockquote{border-left:6px solid var(--accent);background:var(--surface2);paddin
   font-family:var(--head);font-weight:800;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;
   padding:.2rem .55rem;
 }
+
+.gsh-post-kicker{
+  font-family:var(--head);font-weight:800;font-size:2rem;line-height:1;
+  letter-spacing:.02em;text-transform:uppercase;color:var(--text);margin:0 0 .4rem;
+}

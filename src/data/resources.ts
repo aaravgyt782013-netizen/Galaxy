@@ -431,7 +431,9 @@ const KIND_BY_CATEGORY: Record<Category, string> = {
 /** Short excerpt used on feed cards. */
 export function snippetFor(resource: Resource): string {
   const kind = KIND_BY_CATEGORY[resource.category];
-  const highlight = resource.labels.find((l) => l !== kind && l !== "free download");
+  const highlight = resource.labels.find(
+    (l) => l !== kind && l !== "free download" && l !== resource.category,
+  );
   const focus = highlight ? ` Focus: ${highlight}.` : "";
   return `${resource.title} — a free Minecraft ${kind} for Paper, Spigot and Purpur servers.${focus} Installation guide and requirements included.`;
 }
