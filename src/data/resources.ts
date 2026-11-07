@@ -456,7 +456,7 @@ export function cleanResourceSlug(slug: string): string {
 
 /** Canonical public URL for a resource. */
 export function resourceHref(slug: string): string {
-  return \`/resource/\${cleanResourceSlug(slug)}\`;
+  return "/resource/" + cleanResourceSlug(slug);
 }
 
 export function getResource(slug: string, content?: ContentFile): Resource | undefined {
