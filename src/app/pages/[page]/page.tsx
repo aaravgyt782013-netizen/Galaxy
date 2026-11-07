@@ -153,7 +153,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ page: string }>;
 }): Promise<Metadata> {
-  const { page } = await params;
+  const { page: rawPage } = await params;
+  const page = rawPage.replace(/\.html$/i, "");
   const content = PAGES[page];
   return { title: content ? content.title : "Page not found" };
 }
@@ -164,7 +165,7 @@ export default async function StaticPage({
   params: Promise<{ page: string }>;
 }) {
   const { page: rawPage } = await params;
-  const page = rawPage.replace(/\\.html$/i, "");
+  const page = rawPage.replace(/\.html$/i, "");
   const content = PAGES[page];
   if (!content) notFound();
   if (rawPage !== page) permanentRedirect(`/pages/${page}`);
