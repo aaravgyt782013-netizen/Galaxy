@@ -1,28 +1,31 @@
 import Link from "next/link";
-import { CATEGORIES, TOTAL_RESOURCES } from "@/data/resources";
+import { CATEGORIES } from "@/data/resources";
 import { SITE } from "@/lib/site";
-import { PUBLISHED } from "@/lib/content";
+import type { ContentFile } from "@/lib/content";
+import { applyContent } from "@/data/resources";
 import { Logo } from "./Logo";
 
-export function Hero() {
+export function Hero({ content }: { content: ContentFile }) {
+  const settings = content.settings;
+  const totalResources = applyContent(content).length;
   return (
     <section className="gsh-hero" aria-labelledby="hero-title">
       <div className="gsh-hero-inner">
         <div>
-          <span className="gsh-tag">{PUBLISHED.settings.heroTag}</span>
+          <span className="gsh-tag">{settings.heroTag}</span>
           <h1 id="hero-title">
-            {PUBLISHED.settings.heroTitle}
+            {settings.heroTitle}
             <br />
-            <span>{PUBLISHED.settings.heroTitleAccent}</span>
+            <span>{settings.heroTitleAccent}</span>
           </h1>
-          <p>{PUBLISHED.settings.heroSubtitle}</p>
+          <p>{settings.heroSubtitle}</p>
           <div className="gsh-hero-btns">
             <Link className="gsh-btn" href="/category/plugin">
               Browse plugins
             </Link>
             <a
               className="gsh-btn ghost"
-              href={PUBLISHED.settings.discord || SITE.discord}
+              href={settings.discord || SITE.discord}
               target="_blank"
               rel="noopener noreferrer nofollow"
             >
@@ -31,7 +34,7 @@ export function Hero() {
           </div>
           <div className="gsh-stats">
             <div>
-              <strong>{TOTAL_RESOURCES}+</strong>
+              <strong>{totalResources}+</strong>
               <span>Free resources</span>
             </div>
             <div>
