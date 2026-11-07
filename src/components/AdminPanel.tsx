@@ -334,7 +334,11 @@ export function AdminPanel() {
                         <button
                           type="button"
                           className="gsh-filter danger"
-                          onClick={() => removeCustom(r.slug)}
+                          onClick={() => {
+                            if (window.confirm(`Permanently delete "${r.title}"? This custom resource cannot be restored.`)) {
+                              removeCustom(r.slug);
+                            }
+                          }}
                         >
                           Delete
                         </button>
@@ -342,9 +346,13 @@ export function AdminPanel() {
                         <button
                           type="button"
                           className="gsh-filter danger"
-                          onClick={() => toggleHidden(r.slug)}
+                          onClick={() => {
+                            if (window.confirm(`Remove "${r.title}" from the public website? You can restore it later from the Hidden filter.`)) {
+                              toggleHidden(r.slug);
+                            }
+                          }}
                         >
-                          Hide
+                          Remove
                         </button>
                       )}
                     </td>
