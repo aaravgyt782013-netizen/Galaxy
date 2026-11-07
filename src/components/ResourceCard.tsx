@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { coverStyle, snippetFor, type Resource } from "@/data/resources";
+import { coverStyle, resourceHref, snippetFor, type Resource } from "@/data/resources";
 
 const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -34,7 +34,7 @@ export function ResourceCard({ resource }: { resource: Resource }) {
         <div className="snippet-thumbnail-container">
           <Link
             className="snippet-thumbnail"
-            href={`/resource/${resource.slug}`}
+            href={resourceHref(resource.slug)}
             style={coverStyle(resource)}
             aria-label={resource.title}
             title={resource.title}
@@ -43,7 +43,7 @@ export function ResourceCard({ resource }: { resource: Resource }) {
 
         <div className="post">
           <h2 className="post-title">
-            <Link href={`/resource/${resource.slug}`}>{resource.title}</Link>
+            <Link href={resourceHref(resource.slug)}>{resource.title}</Link>
           </h2>
           <p className="post-snippet">{snippetFor(resource)}</p>
         </div>
@@ -51,7 +51,7 @@ export function ResourceCard({ resource }: { resource: Resource }) {
 
       <div className="gsh-card-footer">
         <span className="gsh-card-meta">{shortDate(resource.date)}</span>
-        <Link className="gsh-get-btn" href={`/resource/${resource.slug}`}>
+        <Link className="gsh-get-btn" href={resourceHref(resource.slug)}>
           GET IT NOW
         </Link>
       </div>
