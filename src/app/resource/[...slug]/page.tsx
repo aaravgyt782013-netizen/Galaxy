@@ -86,7 +86,7 @@ export default async function ResourcePage({
               </a>
               <a
                 className="gsh-btn ghost"
-                href={SITE.discord}
+                href={content.settings.discord || SITE.discord}
                 target="_blank"
                 rel="noopener noreferrer nofollow"
               >
