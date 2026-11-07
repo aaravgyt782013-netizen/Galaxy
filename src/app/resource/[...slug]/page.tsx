@@ -4,14 +4,11 @@ import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/ArticleBody";
 import { SectionHead } from "@/components/SectionHead";
 import { getArticle } from "@/data/articles";
-import { RESOURCES, coverStyle, getResource, relatedResources } from "@/data/resources";
-import { SITE } from "@/lib/site";
+import { coverStyle, getResource, relatedResources } from "@/data/resources";
+import { getContentOrPublished } from "@/lib/contentStore";
 
-export function generateStaticParams() {
-  return RESOURCES.map((resource) => ({
-    slug: resource.slug.split("/"),
-  }));
-}
+export const dynamic = "force-dynamic";
+import { SITE } from "@/lib/site";
 
 export async function generateMetadata({
   params,
@@ -19,7 +16,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string[] }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const resource = getResource(slug.join("/"));
+  const content = await getContentOrPublished();
+  const resource = getResource(slug.join("/"), content);
   if (!resource) return { title: "Resource not found" };
   return {
     title: resource.title,
@@ -42,7 +40,7 @@ export default async function ResourcePage({
   if (!resource) notFound();
 
   const article = getArticle(resource.key, resource.title, resource.category);
-  const related = relatedResources(resource, 3);
+  const related = relatedResources(resource, 3, content);
 
   return (
     <main className="page_body item-view" id="main">
