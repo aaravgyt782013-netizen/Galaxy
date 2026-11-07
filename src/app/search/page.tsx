@@ -2,20 +2,30 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { ResourceCard } from "@/components/ResourceCard";
 import { SectionHead } from "@/components/SectionHead";
-import { CATEGORIES, RESOURCES } from "@/data/resources";
+import { applyContent, CATEGORIES, RESOURCES } from "@/data/resources";
 
 function SearchInner() {
   const params = useSearchParams();
   const initial = params.get("q") ?? "";
   const [query, setQuery] = useState(initial);
   const [category, setCategory] = useState("all");
+  const [resources, setResources] = useState(RESOURCES);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/content", { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Content API unavailable")))
+      .then((data) => { if (active && data?.content) setResources(applyContent(data.content)); })
+      .catch((error) => console.error("[search] Could not load shared content:", error));
+    return () => { active = false; };
+  }, []);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return RESOURCES.filter((resource) => {
+    return resources.filter((resource) => {
       const categoryOk = category === "all" || resource.category === category;
       if (!categoryOk) return false;
       if (!q) return true;
@@ -26,7 +36,7 @@ function SearchInner() {
         resource.labels.some((l) => l.includes(q))
       );
     }).slice(0, 54);
-  }, [query, category]);
+  }, [query, category, resources]);
 
   return (
     <main className="page_body feed-view" id="main">
