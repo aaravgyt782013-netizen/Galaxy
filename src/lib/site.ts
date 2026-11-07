@@ -5,7 +5,6 @@ export const SITE = {
   discord: "https://discord.gg/p2YqHYHDXU",
   youtube: "https://youtube.com/@itz-spiral?si=8N6TkOTyrFI11y-D",
   instagram: "https://www.instagram.com/xitzspiralx",
-  email: "contact@pokestudio.dev",
 };
 
 export const NAV = [
