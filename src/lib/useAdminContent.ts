@@ -41,8 +41,26 @@ export function useAdminContent(): [
         if (!response.ok) throw new Error(data?.error || "Could not load shared content");
         return data;
       })
-      .then((data) => {
+      .then(async (data) => {
         if (!active) return;
+        if (data?.initialized === false) {
+          const legacyDraft = readLocalContent();
+          if (legacyDraft) {
+            setContent(legacyDraft);
+            setSaveState("saving");
+            const migration = await fetch("/api/content", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              credentials: "same-origin",
+              body: JSON.stringify({ content: legacyDraft }),
+            });
+            const migrationData = await migration.json().catch(() => ({}));
+            if (!migration.ok) throw new Error(migrationData?.error || "Could not migrate the previous browser draft");
+            window.localStorage.removeItem(ADMIN_STORAGE_KEY);
+            setSaveState("saved");
+            return;
+          }
+        }
         if (data?.content) setContent(normaliseContent(data.content));
         setSaveState("saved");
       })
