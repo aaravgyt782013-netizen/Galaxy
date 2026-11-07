@@ -451,12 +451,12 @@ export function resourcesByCategory(category: Category, content?: ContentFile): 
 
 /** Strip legacy file extensions from public resource paths. Stored catalogue slugs remain unchanged for compatibility. */
 export function cleanResourceSlug(slug: string): string {
-  return slug.replace(/^\\/+/, "").replace(/\\.html$/i, "");
+  return slug.replace(/^\/+/, "").replace(/\.html$/i, "");
 }
 
 /** Canonical public URL for a resource. */
 export function resourceHref(slug: string): string {
-  return `/resource/${cleanResourceSlug(slug)}`;
+  return \`/resource/\${cleanResourceSlug(slug)}\`;
 }
 
 export function getResource(slug: string, content?: ContentFile): Resource | undefined {
