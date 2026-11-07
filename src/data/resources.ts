@@ -445,17 +445,17 @@ export const RESOURCES: Resource[] = withContent(PUBLISHED);
 
 export const TOTAL_RESOURCES = RESOURCES.length;
 
-export function resourcesByCategory(category: Category): Resource[] {
-  return RESOURCES.filter((r) => r.category === category);
+export function resourcesByCategory(category: Category, content?: ContentFile): Resource[] {
+  return (content ? applyContent(content) : RESOURCES).filter((r) => r.category === category);
 }
 
-export function getResource(slug: string): Resource | undefined {
-  const normalized = slug.replace(/^\/+/, "");
-  return RESOURCES.find((r) => r.slug === normalized || r.key === normalized);
+export function getResource(slug: string, content?: ContentFile): Resource | undefined {
+  const normalized = slug.replace(/^\\/+/, "");
+  return (content ? applyContent(content) : RESOURCES).find((r) => r.slug === normalized || r.key === normalized);
 }
 
-export function relatedResources(resource: Resource, limit = 3): Resource[] {
-  const same = RESOURCES.filter(
+export function relatedResources(resource: Resource, limit = 3, content?: ContentFile): Resource[] {
+  const same = (content ? applyContent(content) : RESOURCES).filter(
     (r) => r.category === resource.category && r.slug !== resource.slug,
   );
   return same.slice(0, limit);
