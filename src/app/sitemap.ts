@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { CATEGORIES, RESOURCES } from "@/data/resources";
 
-const BASE = "https://galaxysetuppro.vercel.app";
+const BASE = "https://galaxy-setup-pro.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages = ["", "/search", "/pages/about-us", "/pages/contact-us", "/pages/privacy-policy", "/pages/disclaimer", "/pages/support-my-work"];

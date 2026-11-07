@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { ScrollTop } from "@/components/ScrollTop";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://galaxysetuppro.vercel.app"),
+  metadataBase: new URL("https://galaxy-setup-pro.vercel.app"),
   title: {
     default: "Galaxy Setup Pro",
     template: "%s | Galaxy Setup Pro",
