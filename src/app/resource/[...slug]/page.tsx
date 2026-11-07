@@ -6,9 +6,9 @@ import { SectionHead } from "@/components/SectionHead";
 import { getArticle } from "@/data/articles";
 import { coverStyle, getResource, relatedResources } from "@/data/resources";
 import { getContentOrPublished } from "@/lib/contentStore";
+import { SITE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
-import { SITE } from "@/lib/site";
 
 export async function generateMetadata({
   params,
@@ -36,7 +36,8 @@ export default async function ResourcePage({
   params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await params;
-  const resource = getResource(slug.join("/"));
+  const content = await getContentOrPublished();
+  const resource = getResource(slug.join("/"), content);
   if (!resource) notFound();
 
   const article = getArticle(resource.key, resource.title, resource.category);
