@@ -9,7 +9,6 @@ import { getContentOrPublished } from "@/lib/contentStore";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://poke-studio.vercel.app"),
   title: {
     default: "Poke Studio",
     template: "%s | Poke Studio",
