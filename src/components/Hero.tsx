@@ -12,16 +12,16 @@ export function Hero({ content }: { content: ContentFile }) {
     <section className="gsh-hero" aria-labelledby="hero-title">
       <div className="gsh-hero-inner">
         <div>
-          <span className="gsh-tag">{settings.heroTag}</span>
+          <span className="gsh-tag">Welcome to {SITE.name}</span>
           <h1 id="hero-title">
-            {settings.heroTitle}
+            Minecraft resources.
             <br />
-            <span>{settings.heroTitleAccent}</span>
+            <span>Made for creators.</span>
           </h1>
-          <p>{settings.heroSubtitle}</p>
+          <p>{SITE.tagline} Explore our growing collection of free and premium resources.</p>
           <div className="gsh-hero-btns">
             <Link className="gsh-btn" href="/category/plugin">
-              Browse plugins
+              Explore resources
             </Link>
             <a
               className="gsh-btn ghost"
@@ -35,15 +35,15 @@ export function Hero({ content }: { content: ContentFile }) {
           <div className="gsh-stats">
             <div>
               <strong>{totalResources}+</strong>
-              <span>Free resources</span>
+              <span>Resources</span>
             </div>
             <div>
               <strong>{CATEGORIES.length}</strong>
               <span>Categories</span>
             </div>
             <div>
-              <strong>100%</strong>
-              <span>Free</span>
+              <strong>Free + Paid</strong>
+              <span>For every creator</span>
             </div>
           </div>
         </div>
@@ -52,7 +52,7 @@ export function Hero({ content }: { content: ContentFile }) {
           <div className="gsh-hero-tile">
             <Logo className="gsh-hero-mark" />
             <span className="gsh-hero-name">
-              Galaxysetup<b>Pro</b>
+              Poke <b>Studio</b>
             </span>
           </div>
         </div>
