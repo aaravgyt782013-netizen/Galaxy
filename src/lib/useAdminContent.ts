@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PUBLISHED, normaliseContent, type ContentFile } from "./content";
 
 export const ADMIN_STORAGE_KEY = "gsp-admin-content";
@@ -21,26 +21,70 @@ export function writeLocalContent(content: ContentFile): void {
   window.localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(content));
 }
 
-/** Content currently being edited in the admin panel (falls back to the published file). */
-export function useAdminContent(): [ContentFile, (next: ContentFile) => void, boolean] {
+/** Admin content is loaded from and saved to the shared Neon-backed API. */
+export function useAdminContent(): [
+  ContentFile,
+  (next: ContentFile) => void,
+  boolean,
+  "loading" | "saved" | "saving" | "error",
+] {
   const [content, setContent] = useState<ContentFile>(PUBLISHED);
   const [loaded, setLoaded] = useState(false);
+  const [saveState, setSaveState] = useState<"loading" | "saved" | "saving" | "error">("loading");
+  const saveQueue = useRef<Promise<void>>(Promise.resolve());
 
   useEffect(() => {
-    const stored = readLocalContent();
-    if (stored) setContent(stored);
-    setLoaded(true);
+    let active = true;
+    fetch("/api/content", { cache: "no-store" })
+      .then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data?.error || "Could not load shared content");
+        return data;
+      })
+      .then((data) => {
+        if (!active) return;
+        if (data?.content) setContent(normaliseContent(data.content));
+        setSaveState("saved");
+      })
+      .catch((error) => {
+        console.error("[admin] Shared content load failed:", error);
+        if (active) setSaveState("error");
+      })
+      .finally(() => {
+        if (active) setLoaded(true);
+      });
+    return () => { active = false; };
   }, []);
 
   const update = (next: ContentFile) => {
-    setContent(next);
-    writeLocalContent(next);
+    const normalised = normaliseContent(next);
+    setContent(normalised);
+    setSaveState("saving");
+
+    // Serialize writes so quick consecutive edits cannot finish out of order.
+    saveQueue.current = saveQueue.current
+      .catch(() => undefined)
+      .then(async () => {
+        const response = await fetch("/api/content", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ content: normalised }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data?.error || "Could not save shared content");
+        setSaveState("saved");
+      })
+      .catch((error) => {
+        console.error("[admin] Shared content save failed:", error);
+        setSaveState("error");
+      });
   };
 
-  return [content, update, loaded];
+  return [content, update, loaded, saveState];
 }
 
-/** Whether the public site should render the local draft instead of the published content. */
+/** Whether the site should render the local preview draft. Kept for compatibility. */
 export function isPreviewMode(): boolean {
   if (typeof window === "undefined") return false;
   try {
