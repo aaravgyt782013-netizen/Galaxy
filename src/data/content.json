@@ -7,7 +7,13 @@
     "heroSubtitle": "Your creative hub for Minecraft plugins, server setups, maps, models, panels, web code, scripts and configurations. Explore free and premium resources.",
     "discord": "https://discord.gg/p2YqHYHDXU",
     "accent": "#e63946",
-    "accentHi": "#ff6975"
+    "accentHi": "#ff6975",
+    "background": "#100e12",
+    "surface": "#19161b",
+    "surfaceAlt": "#211c22",
+    "text": "#fff8f7",
+    "muted": "#b9aeb0",
+    "border": "#382a2d"
   },
   "patches": {},
   "hidden": [],
