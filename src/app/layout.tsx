@@ -38,8 +38,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const accentStyle = {
     "--accent": content.settings.accent,
     "--accent-hi": content.settings.accentHi,
-    "--cube-l": PUBLISHED.settings.accent,
-    "--cube-t": PUBLISHED.settings.accentHi,
+    "--cube-l": content.settings.accent,
+    "--cube-t": content.settings.accentHi,
   } as React.CSSProperties;
 
   return (
