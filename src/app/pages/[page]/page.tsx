@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { SITE } from "@/lib/site";
 
 type PageContent = {
@@ -163,9 +163,11 @@ export default async function StaticPage({
 }: {
   params: Promise<{ page: string }>;
 }) {
-  const { page } = await params;
+  const { page: rawPage } = await params;
+  const page = rawPage.replace(/\\.html$/i, "");
   const content = PAGES[page];
   if (!content) notFound();
+  if (rawPage !== page) permanentRedirect(`/pages/${page}`);
 
   return (
     <main className="page_body item-view" id="main">
