@@ -10,6 +10,12 @@ export type SiteSettings = {
   discord: string;
   accent: string;
   accentHi: string;
+  background: string;
+  surface: string;
+  surfaceAlt: string;
+  text: string;
+  muted: string;
+  border: string;
 };
 
 export type ResourcePatch = {
@@ -47,6 +53,12 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   discord: "https://discord.gg/p2YqHYHDXU",
   accent: "#e63946",
   accentHi: "#ff6975",
+  background: "#100e12",
+  surface: "#19161b",
+  surfaceAlt: "#211c22",
+  text: "#fff8f7",
+  muted: "#b9aeb0",
+  border: "#382a2d",
 };
 
 /** The published content file that ships with the build. */
@@ -74,7 +86,19 @@ export function isCategory(value: string): value is CategoryId {
 /** Normalise anything coming from localStorage / JSON imports. */
 export function normaliseContent(raw: unknown): ContentFile {
   const input = (raw ?? {}) as Partial<ContentFile>;
-  const settings = { ...DEFAULT_SETTINGS, ...(input.settings ?? {}) } as SiteSettings;
+  const rawSettings = { ...DEFAULT_SETTINGS, ...(input.settings ?? {}) } as SiteSettings;
+  const isHex = (v: unknown): v is string => typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(v);
+  const settings: SiteSettings = {
+    ...rawSettings,
+    accent: isHex(rawSettings.accent) ? rawSettings.accent : DEFAULT_SETTINGS.accent,
+    accentHi: isHex(rawSettings.accentHi) ? rawSettings.accentHi : DEFAULT_SETTINGS.accentHi,
+    background: isHex(rawSettings.background) ? rawSettings.background : DEFAULT_SETTINGS.background,
+    surface: isHex(rawSettings.surface) ? rawSettings.surface : DEFAULT_SETTINGS.surface,
+    surfaceAlt: isHex(rawSettings.surfaceAlt) ? rawSettings.surfaceAlt : DEFAULT_SETTINGS.surfaceAlt,
+    text: isHex(rawSettings.text) ? rawSettings.text : DEFAULT_SETTINGS.text,
+    muted: isHex(rawSettings.muted) ? rawSettings.muted : DEFAULT_SETTINGS.muted,
+    border: isHex(rawSettings.border) ? rawSettings.border : DEFAULT_SETTINGS.border,
+  };
 
   const patches: Record<string, ResourcePatch> = {};
   for (const [key, value] of Object.entries(input.patches ?? {})) {
