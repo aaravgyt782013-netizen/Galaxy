@@ -1,11 +1,11 @@
 export const SITE = {
-  name: "Galaxy Setup Pro",
-  short: "Galaxysetup Pro",
-  tagline: "Free Minecraft plugins, server setups, maps, models, configs and resources. Power up your server today.",
+  name: "Poke Studio",
+  short: "Poke Studio",
+  tagline: "Your creative hub for Minecraft plugins, server setups, maps, models, panels, web code, scripts and more.",
   discord: "https://discord.gg/p2YqHYHDXU",
   youtube: "https://youtube.com/@itz-spiral?si=8N6TkOTyrFI11y-D",
   instagram: "https://www.instagram.com/xitzspiralx",
-  email: "contact@galaxysetuppro.online",
+  email: "contact@pokestudio.dev",
 };
 
 export const NAV = [
