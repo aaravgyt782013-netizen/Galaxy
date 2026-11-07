@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CATEGORIES, applyContent, type Resource } from "@/data/resources";
+import { CATEGORIES, applyContent, cleanResourceSlug, resourceHref, type Resource } from "@/data/resources";
 import {
   DEFAULT_SETTINGS,
   PUBLISHED,
@@ -14,7 +14,7 @@ import { useAdminContent } from "@/lib/useAdminContent";
 type Tab = "resources" | "new" | "settings" | "publish";
 
 const emptyDraft = (): CustomResource => ({
-  slug: `${new Date().getFullYear()}/${String(new Date().getMonth() + 1).padStart(2, "0")}/new-resource.html`,
+  slug: `${new Date().getFullYear()}/${String(new Date().getMonth() + 1).padStart(2, "0")}/new-resource`,
   title: "",
   category: "plugin",
   date: new Date().toISOString().slice(0, 10),
@@ -96,7 +96,7 @@ export function AdminPanel() {
       flash("Title aur slug zaroori hai");
       return;
     }
-    const slug = draft.slug.trim();
+    const slug = cleanResourceSlug(draft.slug.trim());
     const item: CustomResource = {
       ...draft,
       slug,
@@ -323,7 +323,7 @@ export function AdminPanel() {
                       </button>
                       <a
                         className="gsh-filter"
-                        href={`/resource/${r.slug}`}
+                        href={resourceHref(r.slug)}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
