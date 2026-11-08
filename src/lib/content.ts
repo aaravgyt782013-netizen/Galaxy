@@ -50,7 +50,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   heroTitleAccent: "Made for creators.",
   heroSubtitle:
     "Your creative hub for Minecraft plugins, server setups, maps, models, panels, web code, scripts and configurations. Explore free and premium resources.",
-  discord: "https://discord.gg/p2YqHYHDXU",
+  discord: "https://discord.gg/BYU8bkY6sz",
   accent: "#e63946",
   accentHi: "#ff6975",
   background: "#100e12",
