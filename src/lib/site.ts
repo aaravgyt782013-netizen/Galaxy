@@ -2,9 +2,9 @@ export const SITE = {
   name: "Poke Studio",
   short: "Poke Studio",
   tagline: "Your creative hub for Minecraft plugins, server setups, maps, models, panels, web code, scripts and more.",
-  discord: "https://discord.gg/p2YqHYHDXU",
-  youtube: "https://youtube.com/@itz-spiral?si=8N6TkOTyrFI11y-D",
-  instagram: "https://www.instagram.com/xitzspiralx",
+  discord: "https://discord.gg/BYU8bkY6sz",
+  youtube: "https://youtube.com/@light_gamerz?si=KS3S7BF7731DLGSh",
+  instagram: "https://www.instagram.com/aaravg782013.exe?vrfl=d3U4MDl4amp3Ynoz",
 };
 
 export const NAV = [
