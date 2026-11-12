@@ -33,11 +33,29 @@ export async function getStoredContentState(): Promise<{ content: ContentFile; i
   const sql = database();
   const rows = await sql`SELECT content FROM poke_studio_site_content WHERE id = 1 LIMIT 1`;
   if (!rows.length) return { content: PUBLISHED, initialized: false };
-  const stored = rows[0].content;
-  return {
-    content: normaliseContent(typeof stored === "string" ? JSON.parse(stored) : stored),
-    initialized: true,
-  };
+  const stored = normaliseContent(typeof rows[0].content === "string" ? JSON.parse(rows[0].content) : rows[0].content);
+
+  // One-time clean-slate migration: clear old catalogue entries and admin-added
+  // resources, edits, hidden/deleted entries, and embedded resource images.
+  // Preserve the current site settings, including branding, links, and theme.
+  if (stored.version < 2) {
+    const cleanContent: ContentFile = {
+      version: 2,
+      settings: stored.settings,
+      patches: {},
+      hidden: [],
+      deleted: [],
+      custom: [],
+    };
+    await sql`
+      UPDATE poke_studio_site_content
+      SET content = ${JSON.stringify(cleanContent)}::jsonb, updated_at = NOW()
+      WHERE id = 1
+    `;
+    return { content: cleanContent, initialized: true };
+  }
+
+  return { content: stored, initialized: true };
 }
 
 export async function getStoredContent(): Promise<ContentFile> {
