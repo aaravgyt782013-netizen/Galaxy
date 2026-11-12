@@ -21,7 +21,26 @@ const emptyDraft = (): CustomResource => ({
   url: "",
   labels: ["plugin", "free download"],
   summary: "",
+  youtubeUrl: "",
 });
+
+function isValidYoutubeVideoUrl(value: string) {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.toLowerCase();
+    if (!["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be", "www.youtu.be"].includes(host)) return false;
+    const id = host.includes("youtu.be")
+      ? url.pathname.split("/")[1]
+      : url.pathname === "/watch"
+        ? url.searchParams.get("v")
+        : ["/embed/", "/shorts/"].some((prefix) => url.pathname.startsWith(prefix))
+          ? url.pathname.split("/")[2]
+          : null;
+    return Boolean(id && /^[a-zA-Z0-9_-]{11}$/.test(id));
+  } catch {
+    return false;
+  }
+}
 
 function slugify(value: string) {
   return value
@@ -36,11 +55,12 @@ export function AdminPanel() {
   const [content, setContent, loaded, saveState] = useAdminContent();
   const [tab, setTab] = useState<Tab>("resources");
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<"all" | CategoryId | "hidden" | "custom">("all");
+  const [filter, setFilter] = useState<"all" | CategoryId | "hidden" | "deleted" | "custom">("all");
   const [editing, setEditing] = useState<Resource | null>(null);
   const [draft, setDraft] = useState<CustomResource>(emptyDraft);
   const [slugTouched, setSlugTouched] = useState(false);
   const [toast, setToast] = useState("");
+  const [confirmation, setConfirmation] = useState<{ title: string; message: string; confirmLabel: string; onConfirm: () => void } | null>(null);
   const [hexDraft, setHexDraft] = useState<Record<string, string>>({});
 
   const resources = useMemo(() => applyContent(content), [content]);
@@ -49,7 +69,7 @@ export function AdminPanel() {
     const q = query.trim().toLowerCase();
     return resources.filter((r) => {
       if (filter === "custom" && !r.isCustom) return false;
-      if (filter === "hidden") return false;
+      if (filter === "hidden" || filter === "deleted") return false;
       if (filter !== "all" && filter !== "custom" && (r.category as string) !== filter) return false;
       if (!q) return true;
       return r.title.toLowerCase().includes(q) || r.slug.toLowerCase().includes(q);
@@ -58,6 +78,11 @@ export function AdminPanel() {
 
   const hiddenList = useMemo(
     () => applyContent({ ...content, hidden: [] }).filter((r) => content.hidden.includes(r.slug)),
+    [content],
+  );
+
+  const deletedList = useMemo(
+    () => applyContent({ ...content, hidden: [], deleted: [] }).filter((r) => (content.deleted ?? []).includes(r.slug)),
     [content],
   );
 
@@ -97,6 +122,10 @@ export function AdminPanel() {
       flash("Title aur slug zaroori hai");
       return;
     }
+    if ((draft.youtubeUrl ?? "").trim() && !isValidYoutubeVideoUrl((draft.youtubeUrl ?? "").trim())) {
+      flash("Please enter a valid YouTube video URL, or leave it empty");
+      return;
+    }
     const slug = cleanResourceSlug(draft.slug.trim());
     const item: CustomResource = {
       ...draft,
@@ -104,6 +133,7 @@ export function AdminPanel() {
       title: draft.title.trim(),
       labels: draft.labels.length ? draft.labels : [draft.category],
       summary: draft.summary?.trim() || undefined,
+      youtubeUrl: (draft.youtubeUrl ?? "").trim(),
     };
     const isUpdate = content.custom.some((c) => c.slug === slug);
     if (!isUpdate && resources.some((r) => r.slug === slug)) {
@@ -124,13 +154,30 @@ export function AdminPanel() {
 
   const removeCustom = (slug: string) => {
     setContent({ ...content, custom: content.custom.filter((c) => c.slug !== slug) });
-    flash("Deleted");
+    flash("Permanently deleted");
+  };
+
+  const deleteResource = (slug: string) => {
+    if (content.custom.some((item) => item.slug === slug)) {
+      removeCustom(slug);
+      return;
+    }
+    setContent({
+      ...content,
+      hidden: content.hidden.filter((item) => item !== slug),
+      deleted: [...new Set([...(content.deleted ?? []), slug])],
+      patches: Object.fromEntries(Object.entries(content.patches).filter(([key]) => key !== slug)),
+    });
+    flash("Resource permanently removed from the website");
+  };
+
+  const restoreDeleted = (slug: string) => {
+    setContent({ ...content, deleted: (content.deleted ?? []).filter((item) => item !== slug) });
+    flash("Resource restored");
   };
 
   const resetAll = () => {
-    if (!window.confirm("Saari admin changes undo karni hain?")) return;
-    setContent(PUBLISHED);
-    flash("Reset to published content");
+    setConfirmation({ title: "Reset all changes?", message: "This will replace your current admin edits with the original published content. This cannot be undone.", confirmLabel: "Reset everything", onConfirm: () => { setContent(PUBLISHED); flash("Reset to published content"); } });
   };
 
   const exportJson = () => {
@@ -235,10 +282,11 @@ export function AdminPanel() {
               ))}
               <option value="custom">Added by me</option>
               <option value="hidden">Hidden</option>
+              <option value="deleted">Deleted</option>
             </select>
           </div>
 
-          {filter === "hidden" ? (
+          {filter === "hidden" || filter === "deleted" ? (
             <table className="admin-table">
               <thead>
                 <tr>
@@ -248,19 +296,19 @@ export function AdminPanel() {
                 </tr>
               </thead>
               <tbody>
-                {hiddenList.length === 0 ? (
+                {(filter === "hidden" ? hiddenList : deletedList).length === 0 ? (
                   <tr>
                     <td colSpan={3} className="admin-muted">
                       Kuch bhi hidden nahi hai.
                     </td>
                   </tr>
                 ) : (
-                  hiddenList.map((r) => (
+                  (filter === "hidden" ? hiddenList : deletedList).map((r) => (
                     <tr key={r.slug}>
                       <td>{r.title}</td>
                       <td className="admin-mono">{r.slug}</td>
                       <td className="admin-actions">
-                        <button type="button" className="gsh-filter" onClick={() => toggleHidden(r.slug)}>
+                        <button type="button" className="gsh-filter" onClick={() => filter === "hidden" ? toggleHidden(r.slug) : restoreDeleted(r.slug)}>
                           Restore
                         </button>
                       </td>
@@ -280,6 +328,17 @@ export function AdminPanel() {
                 </tr>
               </thead>
               <tbody>
+                {visible.length === 0 ? (
+                  <tr>
+                    <td colSpan={4}>
+                      <div className="zero-admin-empty">
+                        <strong>Your resource library is empty.</strong>
+                        <span>Add your first plugin, setup, map, model or configuration to get started.</span>
+                        <button type="button" className="gsh-btn" onClick={() => setTab("new")}>Add your first resource</button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : null}
                 {visible.slice(0, 100).map((r) => (
                   <tr key={r.slug}>
                     <td>
@@ -311,7 +370,7 @@ export function AdminPanel() {
                         className="gsh-filter"
                         onClick={() => {
                           if (r.isCustom) {
-                            const source = content.custom.find((c) => c.slug === r.slug);
+                            const source = content.custom.find((item) => item.slug === r.slug);
                             if (source) setDraft({ ...source, summary: source.summary ?? "" });
                             setSlugTouched(true);
                             setTab("new");
@@ -322,39 +381,24 @@ export function AdminPanel() {
                       >
                         Edit
                       </button>
-                      <a
-                        className="gsh-filter"
-                        href={resourceHref(r.slug)}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        className="gsh-filter danger"
+                        onClick={() => {
+                          setConfirmation({ title: "Delete this resource?", message: `"${r.title}" will be removed from the public website and placed in Deleted. You can restore it from that filter.`, confirmLabel: "Delete resource", onConfirm: () => deleteResource(r.slug) });
+                        }}
                       >
-                        View
-                      </a>
-                      {r.isCustom ? (
-                        <button
-                          type="button"
-                          className="gsh-filter danger"
-                          onClick={() => {
-                            if (window.confirm(`Permanently delete "${r.title}"? This custom resource cannot be restored.`)) {
-                              removeCustom(r.slug);
-                            }
-                          }}
-                        >
-                          Delete
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="gsh-filter danger"
-                          onClick={() => {
-                            if (window.confirm(`Remove "${r.title}" from the public website? You can restore it later from the Hidden filter.`)) {
-                              toggleHidden(r.slug);
-                            }
-                          }}
-                        >
-                          Remove
-                        </button>
-                      )}
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        className="gsh-filter"
+                        onClick={() => {
+                          setConfirmation({ title: "Hide this resource?", message: `"${r.title}" will disappear from the public website. You can restore it anytime from the Hidden filter.`, confirmLabel: "Hide resource", onConfirm: () => toggleHidden(r.slug) });
+                        }}
+                      >
+                        Hide
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -440,6 +484,65 @@ export function AdminPanel() {
           </label>
 
           <label className="admin-field">
+            <span>Related images (optional)</span>
+            <input
+              className="admin-input"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              multiple
+              onChange={async (e) => {
+                const selected = Array.from(e.target.files ?? []);
+                if (selected.length + (draft.images?.length ?? 0) > 5) {
+                  flash("You can attach up to 5 images");
+                  e.target.value = "";
+                  return;
+                }
+                if (selected.some((file) => !file.type.startsWith("image/") || file.size > 512 * 1024)) {
+                  flash("Use image files up to 512 KB each");
+                  e.target.value = "";
+                  return;
+                }
+                const readImage = (file: File) => new Promise<string>((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Image read failed"));
+                  reader.onerror = () => reject(new Error("Image read failed"));
+                  reader.readAsDataURL(file);
+                });
+                try {
+                  const images = await Promise.all(selected.map(readImage));
+                  setDraft((d) => ({ ...d, images: [...(d.images ?? []), ...images] }));
+                } catch {
+                  flash("Could not read selected image");
+                }
+                e.target.value = "";
+              }}
+            />
+            <small className="admin-muted">Attach up to 5 images (PNG, JPG, WEBP or GIF; max 512 KB each). They will appear in the resource gallery.</small>
+            {draft.images?.length ? (
+              <div className="zero-admin-image-list">
+                {draft.images.map((src, index) => (
+                  <div className="zero-admin-image-item" key={index}>
+                    <img src={src} alt={"Resource preview " + (index + 1)} />
+                    <button type="button" className="gsh-filter danger" onClick={() => setDraft((d) => ({ ...d, images: (d.images ?? []).filter((_, i) => i !== index) }))}>Remove</button>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </label>
+
+          <label className="admin-field">
+            <span>YouTube video URL (optional)</span>
+            <input
+              className="admin-input"
+              type="url"
+              value={draft.youtubeUrl ?? ""}
+              onChange={(e) => setDraft((d) => ({ ...d, youtubeUrl: e.target.value }))}
+              placeholder="https://www.youtube.com/watch?v=…"
+            />
+            <small className="admin-muted">This video will appear embedded on the resource description page.</small>
+          </label>
+
+          <label className="admin-field">
             <span>Card excerpt (optional)</span>
             <textarea
               className="admin-input admin-textarea"
@@ -494,7 +597,7 @@ export function AdminPanel() {
           <section className="admin-form admin-theme-editor">
             <div className="admin-section-heading"><div><span className="admin-eyebrow">DESIGN SYSTEM</span><h2 className="admin-h2">Live theme studio</h2></div><p className="admin-muted">Choose a colour or enter its exact HEX value. Changes sync to the shared site settings.</p></div>
             <div className="admin-theme-preview" style={{ background: content.settings.background, color: content.settings.text, borderColor: content.settings.border }}>
-              <div className="admin-preview-top"><span className="admin-preview-dot" style={{background:content.settings.accent}}/><strong>Poke Studio</strong><span className="admin-preview-label">LIVE PALETTE</span></div>
+              <div className="admin-preview-top"><span className="admin-preview-dot" style={{background:content.settings.accent}}/><strong>Galaxy Setup Pro</strong><span className="admin-preview-label">LIVE PALETTE</span></div>
               <div className="admin-preview-content" style={{background:content.settings.surface,borderColor:content.settings.border}}><span style={{color:content.settings.accentHi}}>CREATOR RESOURCE HUB</span><h3>Build something <b style={{color:content.settings.accent}}>great.</b></h3><p style={{color:content.settings.muted}}>Preview your surface, typography and primary action colours.</p><button type="button" style={{background:content.settings.accent,color:"#ffffff"}}>Primary button</button></div>
               <div className="admin-preview-swatches">{[["Primary",content.settings.accent],["Highlight",content.settings.accentHi],["Background",content.settings.background],["Surface",content.settings.surface],["Text",content.settings.text]].map(([label,color])=><span key={label}><i style={{background:color}}/>{label}</span>)}</div>
             </div>
@@ -553,6 +656,20 @@ export function AdminPanel() {
         </div>
       ) : null}
 
+      {confirmation ? (
+        <div className="admin-modal zero-confirm-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setConfirmation(null); }}>
+          <section className="admin-modal-card zero-confirm-card" role="alertdialog" aria-modal="true" aria-labelledby="zero-confirm-title" aria-describedby="zero-confirm-message">
+            <span className="zero-confirm-mark" aria-hidden="true">Z</span>
+            <p className="zero-confirm-eyebrow">GALAXY SETUP PRO · CONFIRMATION</p>
+            <h2 className="admin-h2" id="zero-confirm-title">{confirmation.title}</h2>
+            <p className="admin-muted" id="zero-confirm-message">{confirmation.message}</p>
+            <div className="zero-confirm-actions">
+              <button type="button" className="gsh-filter" onClick={() => setConfirmation(null)}>Cancel</button>
+              <button type="button" className="gsh-btn zero-confirm-danger" onClick={() => { const action = confirmation.onConfirm; setConfirmation(null); action(); }}>{confirmation.confirmLabel}</button>
+            </div>
+          </section>
+        </div>
+      ) : null}
       {editing ? (
         <div className="admin-modal" role="dialog" aria-modal="true">
           <div className="admin-modal-card">
@@ -571,6 +688,11 @@ export function AdminPanel() {
             <label className="admin-field">
               <span>Download URL</span>
               <input className="admin-input" defaultValue={editing.url} id="edit-url" />
+            </label>
+
+            <label className="admin-field">
+              <span>YouTube video URL (optional)</span>
+              <input className="admin-input" type="url" defaultValue={editing.youtubeUrl ?? ""} id="edit-youtube" placeholder="https://youtu.be/…" />
             </label>
 
             <label className="admin-field">
@@ -594,6 +716,7 @@ export function AdminPanel() {
                     title: read("edit-title").trim(),
                     url: read("edit-url").trim(),
                     date: read("edit-date"),
+                    youtubeUrl: read("edit-youtube").trim(),
                     labels: read("edit-labels")
                       .split(",")
                       .map((l) => l.trim())
