@@ -10,6 +10,22 @@ import { SITE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
+function youtubeEmbedUrl(value?: string) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    let id = "";
+    if (url.hostname === "youtu.be" || url.hostname === "www.youtu.be") id = url.pathname.slice(1);
+    else if (url.hostname.endsWith("youtube.com")) {
+      if (url.pathname === "/watch") id = url.searchParams.get("v") ?? "";
+      else if (url.pathname.startsWith("/embed/") || url.pathname.startsWith("/shorts/")) id = url.pathname.split("/")[2] ?? "";
+    }
+    return /^[a-zA-Z0-9_-]{11}$/.test(id) ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -44,6 +60,7 @@ export default async function ResourcePage({
 
   const article = getArticle(resource.key, resource.title, resource.category);
   const related = relatedResources(resource, 3, content);
+  const videoUrl = youtubeEmbedUrl(resource.youtubeUrl);
 
   return (
     <main className="page_body item-view" id="main">
@@ -97,6 +114,33 @@ export default async function ResourcePage({
             </div>
 
             <div className="post-body">
+              {resource.images?.length ? (
+                <section className="gsh-resource-gallery" aria-label="Resource images">
+                  <h2>Resource gallery</h2>
+                  <div className="gsh-resource-gallery-grid">
+                    {resource.images.map((src, index) => (
+                      <a key={index} href={src} target="_blank" rel="noopener noreferrer">
+                        <img src={src} alt={resource.title + " preview " + (index + 1)} loading="lazy" />
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
+              {videoUrl ? (
+                <section className="gsh-resource-video" aria-label="Resource showcase video">
+                  <h2>Watch the showcase</h2>
+                  <div className="gsh-resource-video-frame">
+                    <iframe
+                      src={videoUrl}
+                      title={`${resource.title} YouTube showcase`}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                    />
+                  </div>
+                </section>
+              ) : null}
               <ArticleBody article={article} />
 
               <div className="gsh-download-row">
@@ -114,8 +158,8 @@ export default async function ResourcePage({
               </div>
 
               <p className="tr-caption">
-                Minecraft is a trademark of Mojang Studios. GalaxySetupPro is an
-                independent Minecraft resource showcase and is not affiliated with
+                Minecraft is a trademark of Mojang Studios. Galaxy Setup Pro is an
+                independent Minecraft resource platform and is not affiliated with
                 Mojang or Microsoft.
               </p>
             </div>
