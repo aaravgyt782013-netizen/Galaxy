@@ -282,6 +282,8 @@ export type Resource = {
   month: string;         // YYYY-MM
   labels: string[];
   summary?: string;      // overrides the generated card excerpt
+  youtubeUrl?: string;   // optional YouTube showcase video
+  images?: string[];     // optional uploaded resource gallery
   isCustom?: boolean;    // added through the admin panel
 };
 
@@ -406,7 +408,8 @@ const BASE_RESOURCES: Resource[] = rawSlugs
 
 function withContent(content: ContentFile): Resource[] {
   const hidden = new Set(content.hidden);
-  const patched = BASE_RESOURCES.filter((r) => !hidden.has(r.slug)).map((r) => {
+  const deleted = new Set(content.deleted ?? []);
+  const patched = BASE_RESOURCES.filter((r) => !hidden.has(r.slug) && !deleted.has(r.slug)).map((r) => {
     const patch = content.patches[r.slug];
     if (!patch) return r;
     return {
@@ -416,6 +419,7 @@ function withContent(content: ContentFile): Resource[] {
       labels: patch.labels?.length ? patch.labels : r.labels,
       url: patch.url ?? r.url,
       date: patch.date ?? r.date,
+      youtubeUrl: patch.youtubeUrl ?? r.youtubeUrl,
     };
   });
 
@@ -429,6 +433,8 @@ function withContent(content: ContentFile): Resource[] {
     month: item.date.slice(0, 7),
     labels: item.labels.length ? item.labels : [item.category],
     summary: item.summary,
+    youtubeUrl: item.youtubeUrl,
+    images: item.images,
     isCustom: true,
   }));
 
