@@ -24,6 +24,7 @@ export type ResourcePatch = {
   labels?: string[];
   url?: string;
   date?: string;
+  youtubeUrl?: string;
 };
 
 export type CustomResource = {
@@ -34,6 +35,8 @@ export type CustomResource = {
   url: string;
   labels: string[];
   summary?: string;
+  youtubeUrl?: string;
+  images?: string[];
 };
 
 export type ContentFile = {
@@ -41,6 +44,7 @@ export type ContentFile = {
   settings: SiteSettings;
   patches: Record<string, ResourcePatch>;
   hidden: string[];
+  deleted: string[];
   custom: CustomResource[];
 };
 
@@ -63,10 +67,11 @@ export const DEFAULT_SETTINGS: SiteSettings = {
 
 /** The published content file that ships with the build. */
 export const PUBLISHED: ContentFile = {
-  version: contentJson.version ?? 1,
+  version: contentJson.version ?? 2,
   settings: { ...DEFAULT_SETTINGS, ...(contentJson.settings as Partial<SiteSettings>) },
   patches: (contentJson.patches ?? {}) as Record<string, ResourcePatch>,
   hidden: (contentJson.hidden ?? []) as string[],
+  deleted: ((contentJson as unknown as { deleted?: string[] }).deleted ?? []) as string[],
   custom: (contentJson.custom ?? []) as CustomResource[],
 };
 
@@ -109,6 +114,7 @@ export function normaliseContent(raw: unknown): ContentFile {
     if (Array.isArray(value.labels)) patch.labels = value.labels.filter((l) => typeof l === "string" && l.trim());
     if (typeof value.url === "string" && value.url.trim()) patch.url = value.url.trim();
     if (typeof value.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value.date)) patch.date = value.date;
+    if (typeof value.youtubeUrl === "string" && value.youtubeUrl.trim()) patch.youtubeUrl = value.youtubeUrl.trim();
     if (Object.keys(patch).length) patches[key] = patch;
   }
 
@@ -122,6 +128,8 @@ export function normaliseContent(raw: unknown): ContentFile {
       url: String(item.url ?? "").trim(),
       labels: Array.isArray(item.labels) ? item.labels.filter((l) => typeof l === "string" && l.trim()) : [],
       summary: typeof item.summary === "string" ? item.summary : undefined,
+      youtubeUrl: typeof item.youtubeUrl === "string" ? item.youtubeUrl.trim() : undefined,
+      images: Array.isArray(item.images) ? item.images.filter((src) => typeof src === "string" && src.startsWith("data:image/")).slice(0, 5) : [],
     }))
     .filter((item) => item.slug && item.title);
 
@@ -130,6 +138,7 @@ export function normaliseContent(raw: unknown): ContentFile {
     settings,
     patches,
     hidden: Array.isArray(input.hidden) ? input.hidden.filter((s) => typeof s === "string") : [],
+    deleted: Array.isArray(input.deleted) ? input.deleted.filter((s) => typeof s === "string") : [],
     custom,
   };
 }
